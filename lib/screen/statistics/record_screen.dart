@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/widget/practice/practice_card.dart';
 import 'package:aiwriting_collection/widget/dialog/mini_dialog.dart';
 import 'package:flutter/material.dart';
@@ -20,18 +22,12 @@ class RecordScreen extends StatelessWidget {
   //세로 화면(모바일 용)
   Widget _buildPortrait(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final bool isLandscape = screenSize.width > screenSize.height;
     // Use width-based scaling in portrait, height-based in landscape
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0; // e.g. typical device height
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -79,7 +75,7 @@ class RecordScreen extends StatelessWidget {
                 appLocalizations.myRecordDescription,
                 style: TextStyle(
                   fontSize: 15 * scale,
-                  fontFamily: 'MaruBuri',
+                  fontFamily: AppFonts.reading,
                   color: Colors.black87,
                   fontWeight: FontWeight.w700,
                 ),
@@ -149,17 +145,11 @@ class RecordScreen extends StatelessWidget {
   Widget _buildLandscape(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     // reuse portrait scaling logic
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0;
-    final bool isLandscape = screenSize.width > screenSize.height;
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -201,7 +191,7 @@ class RecordScreen extends StatelessWidget {
               child: Text(
                 appLocalizations.myRecordDescription,
                 style: TextStyle(
-                  fontFamily: 'MaruBuri',
+                  fontFamily: AppFonts.reading,
                   fontSize: 20 * scale,
                   color: Colors.black87,
                   fontWeight: FontWeight.w700,

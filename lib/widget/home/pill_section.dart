@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 class PillSection extends StatefulWidget {
@@ -17,7 +18,7 @@ class PillSection extends StatefulWidget {
     required this.scale,
     this.minHeight,
     this.contentPadding,
-    this.backgroundColor = const Color(0xFFCEEF91),
+    this.backgroundColor = AppColors.primary,
   });
 
   @override

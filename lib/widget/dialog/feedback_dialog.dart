@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:aiwriting_collection/widget/home/pill_section.dart';
 import 'package:aiwriting_collection/generated/app_localizations.dart';
@@ -28,12 +29,8 @@ class FeedbackDialog extends StatelessWidget {
     final dialogHeight = screenHeight * 0.60;
 
     // 스케일 계산
-    final basePortrait = 390.0;
-    final baseLandscape = 844.0;
     final size = MediaQuery.of(context).size;
-    final isLandscape = size.width > size.height;
-    final base = isLandscape ? baseLandscape : basePortrait;
-    final scale = (isLandscape ? size.height : size.width) / base;
+    final scale = AppLayout.scale(size);
 
     return Container(
       height: dialogHeight,

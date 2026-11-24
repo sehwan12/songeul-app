@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/model/provider/login_status.dart';
 import 'package:aiwriting_collection/model/content/steps.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
@@ -20,19 +22,13 @@ class DetailStudyPage extends StatelessWidget {
             .read<LoginStatus>()
             .userType; // Example assignment, replace with actual user type logic
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       body: Builder(
         builder: (context) {
           final step = nowStep;
           final Size screenSize = MediaQuery.of(context).size;
           // reuse portrait scaling logic
-          final double basePortrait = 390.0;
-          final double baseLandscape = 844.0;
-          final bool isLandscape = screenSize.width > screenSize.height;
-          final double scale =
-              isLandscape
-                  ? screenSize.height / baseLandscape
-                  : screenSize.width / basePortrait;
+          final double scale = AppLayout.scale(screenSize);
 
           //말풍선 왼쪽 여백
           final double horizontalInset = 40 * scale;
@@ -41,7 +37,7 @@ class DetailStudyPage extends StatelessWidget {
             child: Container(
               //container가 벗어난 부분의 경계선을 부드럽게 잘라냄
               clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(color: Color(0xFFFFFBF3)),
+              decoration: BoxDecoration(color: AppColors.canvas),
               child: Padding(
                 padding: EdgeInsets.only(
                   left: 20 * scale,
@@ -96,7 +92,7 @@ class DetailStudyPage extends StatelessWidget {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(50 * scale),
                                 border: Border.all(
-                                  color: const Color(0xFFCEEF91),
+                                  color: AppColors.primary,
                                   width: 6 * scale,
                                 ),
                                 boxShadow: [
@@ -129,7 +125,7 @@ class DetailStudyPage extends StatelessWidget {
                               width: 250 * scale,
                               height: 90 * scale,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFFE5F2),
+                                color: AppColors.secondary,
                                 borderRadius: BorderRadius.circular(30 * scale),
                                 border: Border.all(
                                   color: Colors.pink.shade200,
@@ -176,7 +172,7 @@ class DetailStudyPage extends StatelessWidget {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: const Color(0xFFCEEF91),
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(40 * scale),
                             border: Border.all(
                               color: Colors.green.shade400,

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/model/content/stroke/stroke.dart';
 import 'package:aiwriting_collection/widget/writing/inactivecell_painter.dart';
 import 'package:flutter/material.dart';
@@ -213,7 +214,7 @@ class GridHandwritingCanvasState extends State<GridHandwritingCanvas> {
                           maxPerRow: widget.maxPerRow,
                           cellSize: widget.cellSize,
                           textStyle: TextStyle(
-                            fontFamily: 'Maruburi',
+                            fontFamily: AppFonts.reading,
                             fontWeight: FontWeight.w500,
                             color: Colors.grey[400],
                             fontSize: widget.cellSize * 0.7,

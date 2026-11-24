@@ -1,81 +1,42 @@
-import 'package:flutter/material.dart';
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/generated/app_localizations.dart';
+import 'package:flutter/material.dart';
 
 class Bottom extends StatelessWidget {
   const Bottom({super.key});
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations appLocalizations = AppLocalizations.of(context)!;
-    // Calculate scale based on orientation
-    final Size screenSize = MediaQuery.of(context).size;
-    const double basePortrait = 390.0;
-    const double baseLandscape = 844.0;
-    final orientation = MediaQuery.of(context).orientation;
-    final bool isLandscape = orientation == Orientation.landscape;
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final l10n = AppLocalizations.of(context)!;
+    final scale = AppLayout.scale(MediaQuery.sizeOf(context));
+    final barHeight = 65.0 * scale;
+    final labelStyle = TextStyle(
+      fontSize: barHeight * 0.22,
+      color: AppColors.text,
+      fontWeight: FontWeight.bold,
+    );
 
-    // Define bottom bar height using scale
-    const double baseBarHeight = 65.0;
-    final double barHeight = baseBarHeight * scale;
+    Tab tab(IconData icon, String label) {
+      return Tab(
+        icon: Icon(icon, size: barHeight * 0.40),
+        child: Text(label, style: labelStyle),
+      );
+    }
 
-    return Container(
+    return SizedBox(
       height: barHeight,
-      color: const Color(0xFFCEEF91),
-      child: SizedBox(
-        height: barHeight,
+      child: ColoredBox(
+        color: AppColors.primary,
         child: TabBar(
-          labelColor: const Color.fromARGB(221, 241, 105, 14),
+          labelColor: AppColors.navigationSelected,
           unselectedLabelColor: Colors.black54,
           indicatorColor: Colors.transparent,
-          tabs: <Widget>[
-            Tab(
-              icon: Icon(Icons.home, size: barHeight * 0.40),
-              child: Text(
-                appLocalizations.home,
-                style: TextStyle(
-                  fontSize: barHeight * 0.22,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Tab(
-              icon: Icon(Icons.school, size: barHeight * 0.40),
-              child: Text(
-                appLocalizations.freeStudy,
-                style: TextStyle(
-                  fontSize: barHeight * 0.22,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Tab(
-              icon: Icon(Icons.history, size: barHeight * 0.40),
-              child: Text(
-                appLocalizations.history,
-                style: TextStyle(
-                  fontSize: barHeight * 0.22,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Tab(
-              icon: Icon(Icons.person, size: barHeight * 0.40),
-              child: Text(
-                appLocalizations.myInfo,
-                style: TextStyle(
-                  fontSize: barHeight * 0.22,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+          tabs: [
+            tab(Icons.home, l10n.home),
+            tab(Icons.school, l10n.freeStudy),
+            tab(Icons.history, l10n.history),
+            tab(Icons.person, l10n.myInfo),
           ],
         ),
       ),

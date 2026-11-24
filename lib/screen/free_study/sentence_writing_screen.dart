@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:aiwriting_collection/model/content/practice.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
@@ -15,7 +16,10 @@ class SentenceWritingScreen extends StatelessWidget {
     AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     final api = Api();
     final size = MediaQuery.of(context).size;
-    final scale = size.height / 844.0;
+    final scale = AppLayout.scaleForExtent(
+      size.height,
+      AppLayout.landscapeReferenceHeight,
+    );
 
     final double screenWidth = size.width;
     final double sidePadding = 64 * scale; // 좌우 패딩
@@ -32,7 +36,9 @@ class SentenceWritingScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('${appLocalizations.error}: ${snapshot.error}'));
+            return Center(
+              child: Text('${appLocalizations.error}: ${snapshot.error}'),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text(appLocalizations.noDataAvailable));
           }

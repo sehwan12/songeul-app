@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/widget/common/back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,16 +27,10 @@ class BasicHandwritingScreen extends StatelessWidget {
 
   Widget _buildPortrait(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final bool isLandscape = screenSize.width > screenSize.height;
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0;
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0 * scale),
         child: Column(
@@ -131,16 +127,10 @@ class BasicHandwritingScreen extends StatelessWidget {
 
   Widget _buildLandscape(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final bool isLandscape = screenSize.width > screenSize.height;
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0;
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: 50.0 * scale,

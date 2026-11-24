@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -120,8 +122,10 @@ class _SignScreenState extends State<SignScreen> {
 
   Widget _buildPortrait(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final double baseWidth = 390.0;
-    final double scale = screenSize.width / baseWidth;
+    final double scale = AppLayout.scaleForExtent(
+      screenSize.width,
+      AppLayout.portraitReferenceWidth,
+    );
     final double horizontalPadding = 16 * scale;
     final double verticalSpacingLarge = 24 * scale;
     final double verticalSpacing = 16 * scale;
@@ -136,7 +140,7 @@ class _SignScreenState extends State<SignScreen> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       appBar: AppBar(
         title: Text(
           '회원가입',
@@ -160,8 +164,10 @@ class _SignScreenState extends State<SignScreen> {
 
   Widget _buildLandscape(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final double baseHeight = 390.0;
-    final double scale = screenSize.height / baseHeight;
+    final double scale = AppLayout.scaleForExtent(
+      screenSize.height,
+      AppLayout.portraitReferenceWidth,
+    );
     final double horizontalPadding = 16 * scale;
     final double verticalSpacingLarge = 24 * scale;
     final double verticalSpacing = 16 * scale;
@@ -477,7 +483,7 @@ class _SignScreenState extends State<SignScreen> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFCEEF91), // 파스텔 그린
+        backgroundColor: AppColors.primary, // 파스텔 그린
         foregroundColor: Colors.black,
         minimumSize: const Size(double.infinity, 56),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),

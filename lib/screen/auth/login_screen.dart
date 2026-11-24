@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/model/provider/language_provider.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
 import 'package:flutter/material.dart';
@@ -71,13 +73,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildPortrait(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final double basePortrait = 390.0;
-    final double scale = screenSize.width / basePortrait;
+    final double scale = AppLayout.scaleForExtent(
+      screenSize.width,
+      AppLayout.portraitReferenceWidth,
+    );
     final double horizontalPadding = 16 * scale;
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFCEEF91),
+      backgroundColor: AppColors.primary,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -267,13 +271,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLandscape(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final double baseLandscape = 844.0;
-    final double scale = screenSize.height / baseLandscape; // 가로모드에서는 높이 기준
+    final double scale = AppLayout.scaleForExtent(
+      screenSize.height,
+      AppLayout.landscapeReferenceHeight,
+    ); // 가로모드에서는 높이 기준
     final double horizontalPadding = 16 * scale;
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFCEEF91),
+      backgroundColor: AppColors.primary,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(

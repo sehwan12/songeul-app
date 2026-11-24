@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/screen/free_study/basic_handwriting_screen.dart';
 import 'package:aiwriting_collection/screen/free_study/letter_writing_screen.dart';
 import 'package:aiwriting_collection/screen/free_study/sentence_writing_screen.dart';
@@ -23,14 +25,8 @@ class StudyScreen extends StatelessWidget {
   //세로 화면(모바일 용)
   Widget _buildPortrait(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final bool isLandscape = screenSize.width > screenSize.height;
     // Use width-based scaling in portrait, height-based in landscape
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0; // e.g. typical device height
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -83,7 +79,7 @@ class StudyScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15 * scale,
                   color: Colors.black87,
-                  fontFamily: 'MaruBuri',
+                  fontFamily: AppFonts.reading,
                   fontWeight: FontWeight.w700,
                 ),
                 textAlign: TextAlign.left,
@@ -200,17 +196,11 @@ class StudyScreen extends StatelessWidget {
   Widget _buildLandscape(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     // reuse portrait scaling logic
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0;
-    final bool isLandscape = screenSize.width > screenSize.height;
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -256,7 +246,7 @@ class StudyScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 23 * scale,
                   color: Colors.black87,
-                  fontFamily: 'MaruBuri',
+                  fontFamily: AppFonts.reading,
                   fontWeight: FontWeight.w700,
                 ),
                 textAlign: TextAlign.center,

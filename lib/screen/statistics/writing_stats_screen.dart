@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
 import 'package:aiwriting_collection/model/content/stats.dart';
@@ -133,16 +135,12 @@ class _WritingStatsScreenState extends State<WritingStatsScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isLandscape = size.width > size.height;
-    final basePortrait = 390.0;
-    final baseLandscape = 844.0;
-    final scale =
-        isLandscape ? size.height / baseLandscape : size.width / basePortrait;
+    final scale = AppLayout.scale(size);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFFBF3),
+        backgroundColor: AppColors.canvas,
         elevation: 0,
         title: const Text('글씨 점수 통계', style: TextStyle(color: Colors.black87)),
         iconTheme: const IconThemeData(color: Colors.black87),
@@ -197,7 +195,7 @@ class _WritingStatsScreenState extends State<WritingStatsScreen> {
                   vertical: 12 * scale,
                 ),
                 decoration: BoxDecoration(
-                  color: selected ? const Color(0xFFCEEF91) : Colors.white,
+                  color: selected ? AppColors.primary : Colors.white,
                   border: Border.all(color: Colors.black26),
                   borderRadius: BorderRadius.circular(12 * scale),
                 ),
@@ -336,7 +334,7 @@ class _WritingStatsScreenState extends State<WritingStatsScreen> {
                           width: barBaseWidth * scale,
                           height: barHeight,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFCEEF91),
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(12 * scale),
                           ),
                         ),

@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
 import 'package:aiwriting_collection/model/content/user_profile.dart';
@@ -221,14 +222,8 @@ class _MypageScreenState extends State<MypageScreen> {
   //세로 화면(모바일 용)
   Widget _buildPortrait(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    final bool isLandscape = screenSize.width > screenSize.height;
     // Use width-based scaling in portrait, height-based in landscape
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0; // e.g. typical device height
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -586,13 +581,7 @@ class _MypageScreenState extends State<MypageScreen> {
   Widget _buildLandscape(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     // reuse portrait scaling logic
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0;
-    final bool isLandscape = screenSize.width > screenSize.height;
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(

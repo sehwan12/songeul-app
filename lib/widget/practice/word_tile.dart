@@ -1,5 +1,6 @@
 // lib/widget/word_tile.dart
 
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// 1글자/2글자/그 이상의 문자열을 표시할 수 있도록 확장한 WordTile
@@ -58,7 +59,7 @@ class WordTile extends StatelessWidget {
               offset: Offset(2 * scale, 2 * scale),
             ),
           ],
-          color: const Color(0xFFCEEF91),
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(8 * scale),
         ),
         child: Text(

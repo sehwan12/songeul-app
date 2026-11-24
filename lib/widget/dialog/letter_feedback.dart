@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:aiwriting_collection/widget/home/pill_section.dart';
 import 'package:aiwriting_collection/generated/app_localizations.dart';
@@ -19,12 +21,8 @@ class LetterFeedbackSheet extends StatelessWidget {
   });
 
   double _scaleOf(BuildContext context) {
-    const basePortrait = 390.0;
-    const baseLandscape = 844.0;
     final size = MediaQuery.of(context).size;
-    final isLandscape = size.width > size.height;
-    final base = isLandscape ? baseLandscape : basePortrait;
-    return (isLandscape ? size.height : size.width) / base;
+    return AppLayout.scale(size);
   }
 
   @override
@@ -70,7 +68,11 @@ class LetterFeedbackSheet extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _infoLine(AppLocalizations.of(context)!.targetCharacter, targetChar, scale),
+                        _infoLine(
+                          AppLocalizations.of(context)!.targetCharacter,
+                          targetChar,
+                          scale,
+                        ),
                         SizedBox(height: 6 * scale),
                         _infoLine(
                           AppLocalizations.of(context)!.score,
@@ -140,7 +142,7 @@ class LetterFeedbackSheet extends StatelessWidget {
             text: '$key: ',
             style: TextStyle(
               fontSize: 25 * scale,
-              fontFamily: 'Cafe24Ssurround',
+              fontFamily: AppFonts.display,
               color: Colors.black,
             ),
           ),
@@ -148,7 +150,7 @@ class LetterFeedbackSheet extends StatelessWidget {
             text: value,
             style: TextStyle(
               fontSize: 25 * scale,
-              fontFamily: 'Cafe24Ssurround',
+              fontFamily: AppFonts.display,
               color: Colors.black,
             ),
           ),

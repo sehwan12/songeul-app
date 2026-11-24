@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 class SpeechBubble extends StatelessWidget {
@@ -45,10 +46,7 @@ class SpeechBubble extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(50 * scale),
-              border: Border.all(
-                color: const Color(0xFFFFE5F2),
-                width: 8 * scale,
-              ),
+              border: Border.all(color: AppColors.secondary, width: 8 * scale),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black26,

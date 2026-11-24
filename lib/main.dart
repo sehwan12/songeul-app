@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:aiwriting_collection/design_system/app_theme.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:aiwriting_collection/model/provider/data_provider.dart';
 import 'package:aiwriting_collection/model/provider/language_provider.dart';
@@ -146,17 +147,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           locale: languageProvider.appLocale,
           title: 'MyPen',
-          theme: ThemeData(
-            fontFamily: 'Cafe24Ssurround',
-            brightness: Brightness.light,
-            primaryColor: Color(0xFFCEEF91),
-            canvasColor: Color(0xFFFFFBF3),
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFFCEEF91),
-              secondary: Color(0xFFFFE5F2),
-              tertiary: Color(0xFFFFCEEF),
-            ),
-          ),
+          theme: AppTheme.light,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           routes: {

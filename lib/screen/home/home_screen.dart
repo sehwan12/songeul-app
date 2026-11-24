@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:aiwriting_collection/model/provider/data_provider.dart';
 import 'package:aiwriting_collection/model/content/generated_request_list.dart';
@@ -166,12 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     final bool isLandscape = screenSize.width > screenSize.height;
-    const double basePortrait = 390.0;
-    const double baseLandscape = 844.0;
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
 
     if (!isLandscape) {
       // PORTRAIT

@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:aiwriting_collection/model/content/practice.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
@@ -15,7 +16,10 @@ class LetterWritingScreen extends StatelessWidget {
     AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     final api = Api();
     final size = MediaQuery.of(context).size;
-    final scale = size.height / 844.0;
+    final scale = AppLayout.scaleForExtent(
+      size.height,
+      AppLayout.landscapeReferenceHeight,
+    );
     return Scaffold(
       backgroundColor: Theme.of(context).canvasColor,
       body: FutureBuilder<List<Practice>>(

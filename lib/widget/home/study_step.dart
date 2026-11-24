@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:flutter/material.dart';
 
 /// 재사용 가능한 스텝 위젯
@@ -20,12 +21,7 @@ class StudyStep extends StatelessWidget {
     final Size screenSize = MediaQuery.of(context).size;
     final bool isLandscape = screenSize.width > screenSize.height;
     // Use width-based scaling in portrait, height-based in landscape
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0; // e.g. typical device height
-    final double scale =
-        isLandscape
-            ? screenSize.height / baseLandscape
-            : screenSize.width / basePortrait;
+    final double scale = AppLayout.scale(screenSize);
 
     // increase step size by 20% in landscape
     final double actualDiameter = diameter * (isLandscape ? 1.5 : 1.0) * scale;

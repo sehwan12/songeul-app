@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:aiwriting_collection/model/provider/language_provider.dart';
 import 'package:aiwriting_collection/model/provider/login_status.dart';
@@ -102,12 +103,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     final dialogWidth =
         isPortrait ? screenSize.width * 0.8 : screenSize.width * 0.5;
 
-    final double basePortrait = 390.0;
-    final double baseLandscape = 844.0;
-    final double scale =
-        isPortrait
-            ? screenSize.width / basePortrait
-            : screenSize.height / baseLandscape;
+    final double scale = AppLayout.scale(screenSize);
     final appLocalizations = AppLocalizations.of(context)!;
 
     return AlertDialog(

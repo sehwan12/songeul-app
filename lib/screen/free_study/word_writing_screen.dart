@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:aiwriting_collection/model/content/practice.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
@@ -6,16 +7,19 @@ import 'package:aiwriting_collection/widget/practice/word_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:aiwriting_collection/widget/common/back_button.dart';
 import 'package:aiwriting_collection/generated/app_localizations.dart';
-class WordWritingScreen extends StatelessWidget {
 
+class WordWritingScreen extends StatelessWidget {
   const WordWritingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     AppLocalizations appLocalizations = AppLocalizations.of(context)!;
-    final api=Api();
+    final api = Api();
     final size = MediaQuery.of(context).size;
-    final scale = size.height / 844.0;
+    final scale = AppLayout.scaleForExtent(
+      size.height,
+      AppLayout.landscapeReferenceHeight,
+    );
 
     return Scaffold(
       backgroundColor: Theme.of(context).canvasColor,
@@ -25,14 +29,18 @@ class WordWritingScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('${appLocalizations.error}: ${snapshot.error}'));
+            return Center(
+              child: Text('${appLocalizations.error}: ${snapshot.error}'),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text(appLocalizations.noDataAvailable));
           }
 
           List<Practice> wordPractices =
               snapshot.data!
-                  .where((practice) => practice.practiceType == WritingType.WORD)
+                  .where(
+                    (practice) => practice.practiceType == WritingType.WORD,
+                  )
                   .toList();
 
           // 글자 수별로 단어를 그룹화

@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 class PracticeCard extends StatelessWidget {
@@ -23,8 +25,8 @@ class PracticeCard extends StatelessWidget {
     required this.subtitle,
     required this.imagePath,
     required this.onTap,
-    this.basePortrait = 390.0,
-    this.baseLandscape = 844.0,
+    this.basePortrait = AppLayout.portraitReferenceWidth,
+    this.baseLandscape = AppLayout.landscapeReferenceHeight,
 
     this.cardWidth,
     this.cardHeight,
@@ -39,17 +41,18 @@ class PracticeCard extends StatelessWidget {
         (cardWidth != null && cardHeight != null)
             ? Size(cardWidth!, cardHeight!)
             : MediaQuery.of(context).size;
-    //가로모드/세로모드 구분
-    final bool isLandscape = size.width > size.height;
-    final double base = isLandscape ? baseLandscape : basePortrait;
-    final double scale = (isLandscape ? size.height : size.width) / base;
-    return value * scale;
+    return value *
+        AppLayout.scale(
+          size,
+          portraitWidth: basePortrait,
+          landscapeHeight: baseLandscape,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    final double paddingH = scaled(context, 16);
-    final double spacing = scaled(context, 8);
+    final double paddingH = scaled(context, AppSpacing.medium);
+    final double spacing = scaled(context, AppSpacing.small);
 
     final bool isLandscape =
         (cardWidth ?? MediaQuery.of(context).size.width) >
@@ -81,7 +84,9 @@ class PracticeCard extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(scaled(context, 12)),
+              borderRadius: BorderRadius.circular(
+                scaled(context, AppRadius.card),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black12,
@@ -104,7 +109,7 @@ class PracticeCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: titleFontSize,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: AppColors.text,
                         ),
                       ),
                       SizedBox(height: spacing),
@@ -112,7 +117,7 @@ class PracticeCard extends StatelessWidget {
                         child: Text(
                           subtitle,
                           style: TextStyle(
-                            fontFamily: 'MaruBuri',
+                            fontFamily: AppFonts.reading,
                             fontSize: subtitleFontSize,
                             color: Colors.grey[600],
                           ),

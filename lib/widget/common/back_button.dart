@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:flutter/material.dart';
 
 class BackButtonWidget extends StatelessWidget {
@@ -16,7 +17,7 @@ class BackButtonWidget extends StatelessWidget {
           height: 50 * scale,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(8 * scale),
+            borderRadius: BorderRadius.circular(AppRadius.control * scale),
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,

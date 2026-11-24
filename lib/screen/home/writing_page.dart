@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/model/provider/data_provider.dart';
 import 'package:aiwriting_collection/model/content/steps.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
@@ -144,15 +146,11 @@ class _WritingPageState extends State<WritingPage> {
   }
 
   //기본 기준값
-  final double basePortrait = 390.0;
-  final double baseLandscape = 844.0;
 
   double scaled(BuildContext context, double value) {
     final Size size = MediaQuery.of(context).size;
     //가로모드/세로모드 구분
-    final bool isLandscape = size.width > size.height;
-    final double base = isLandscape ? baseLandscape : basePortrait;
-    final double scale = (isLandscape ? size.height : size.width) / base;
+    final double scale = AppLayout.scale(size);
     return value * scale;
   }
 
@@ -464,7 +462,7 @@ class _WritingPageState extends State<WritingPage> {
           child: Container(
             //container가 벗어난 부분의 경계선을 부드럽게 잘라냄
             clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(color: const Color(0xFFFFFBF3)),
+            decoration: BoxDecoration(color: AppColors.canvas),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(53, 5, 53, 0),
               child: Column(
@@ -488,7 +486,7 @@ class _WritingPageState extends State<WritingPage> {
                             width: scaled(context, 200),
                             height: scaled(context, 60),
                             decoration: BoxDecoration(
-                              color: Color(0xFFFFCEEF),
+                              color: AppColors.tertiary,
                               borderRadius: BorderRadius.circular(
                                 scaled(context, 12),
                               ),
@@ -539,7 +537,7 @@ class _WritingPageState extends State<WritingPage> {
                       width: gridWidth,
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: const Color(0xFFCEEF91),
+                          color: AppColors.primary,
                           width: scaled(context, 5),
                         ),
                         color: Colors.white,
@@ -556,7 +554,7 @@ class _WritingPageState extends State<WritingPage> {
                         widget.nowStep.stepText,
                         style: TextStyle(
                           fontSize: scaled(context, 45),
-                          fontFamily: "MaruBuri",
+                          fontFamily: AppFonts.reading,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -588,7 +586,7 @@ class _WritingPageState extends State<WritingPage> {
                                 essentialStrokeCounts:
                                     widget.nowStep.essentialStrokeCounts,
                                 charCount: widget.nowStep.stepText.length,
-                                gridColor: const Color(0xFFFFCEEF),
+                                gridColor: AppColors.tertiary,
                                 gridWidth: scaled(context, 3),
                                 cellSize: scaled(context, cellSize),
                                 showGuides: widget.showGuides,
@@ -697,7 +695,7 @@ class _WritingPageState extends State<WritingPage> {
                             width: scaled(context, 230),
                             height: scaled(context, 80),
                             decoration: BoxDecoration(
-                              color: Color(0xFFCEEF91),
+                              color: AppColors.primary,
                               borderRadius: BorderRadius.circular(
                                 scaled(context, 12),
                               ),
@@ -738,7 +736,7 @@ class _WritingPageState extends State<WritingPage> {
                             width: scaled(context, 230),
                             height: scaled(context, 80),
                             decoration: BoxDecoration(
-                              color: Color(0xFFCEEF91),
+                              color: AppColors.primary,
                               borderRadius: BorderRadius.circular(
                                 scaled(context, 12),
                               ),
@@ -768,7 +766,7 @@ class _WritingPageState extends State<WritingPage> {
                             width: scaled(context, 230),
                             height: scaled(context, 80),
                             decoration: BoxDecoration(
-                              color: Color(0xFFCEEF91),
+                              color: AppColors.primary,
                               borderRadius: BorderRadius.circular(
                                 scaled(context, 12),
                               ),
@@ -812,7 +810,7 @@ class _WritingPageState extends State<WritingPage> {
                             width: scaled(context, 230),
                             height: scaled(context, 80),
                             decoration: BoxDecoration(
-                              color: Color(0xFFCEEF91),
+                              color: AppColors.primary,
                               borderRadius: BorderRadius.circular(
                                 scaled(context, 12),
                               ),

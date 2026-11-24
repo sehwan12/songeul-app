@@ -1,3 +1,4 @@
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:aiwriting_collection/generated/app_localizations.dart';
 
@@ -17,7 +18,7 @@ class MiniDialog extends StatelessWidget {
     AppLocalizations appLocalizations = AppLocalizations.of(context)!;
     return AlertDialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16 * scale),
+        borderRadius: BorderRadius.circular(AppRadius.dialog * scale),
       ),
       backgroundColor: Colors.white,
       title: Center(
@@ -25,7 +26,7 @@ class MiniDialog extends StatelessWidget {
           title,
           style: TextStyle(
             color: Colors.green,
-            fontFamily: 'Pretendard',
+            fontFamily: AppFonts.interface,
             fontSize: 20 * scale,
             fontWeight: FontWeight.bold,
           ),
@@ -35,8 +36,8 @@ class MiniDialog extends StatelessWidget {
         content,
 
         style: TextStyle(
-          color: Colors.black87,
-          fontFamily: 'Pretendard',
+          color: AppColors.text,
+          fontFamily: AppFonts.interface,
           fontSize: 15 * scale,
           fontWeight: FontWeight.bold,
         ),
@@ -44,7 +45,9 @@ class MiniDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 16 * scale),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.medium * scale,
+            ),
           ),
           child: Padding(
             padding: EdgeInsets.all(6.0),
@@ -52,7 +55,7 @@ class MiniDialog extends StatelessWidget {
               appLocalizations.ok,
               style: TextStyle(
                 color: Colors.red.shade400,
-                fontFamily: 'Pretendard',
+                fontFamily: AppFonts.interface,
                 fontSize: 13 * scale,
                 fontWeight: FontWeight.bold,
               ),

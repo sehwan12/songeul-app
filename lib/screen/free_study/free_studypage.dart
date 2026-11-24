@@ -1,3 +1,5 @@
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:aiwriting_collection/model/content/practice.dart';
 import 'package:aiwriting_collection/model/common/type_enum.dart';
 import 'package:aiwriting_collection/widget/common/back_button.dart';
@@ -36,15 +38,11 @@ class _FreeStudyPageState extends State<FreeStudyPage> {
   }
 
   //기본 기준값
-  final double basePortrait = 390.0;
-  final double baseLandscape = 844.0;
 
   double scaled(BuildContext context, double value) {
     final Size size = MediaQuery.of(context).size;
     //가로모드/세로모드 구분
-    final bool isLandscape = size.width > size.height;
-    final double base = isLandscape ? baseLandscape : basePortrait;
-    final double scale = (isLandscape ? size.height : size.width) / base;
+    final double scale = AppLayout.scale(size);
     return value * scale;
   }
 
@@ -76,7 +74,7 @@ class _FreeStudyPageState extends State<FreeStudyPage> {
           child: Container(
             //container가 벗어난 부분의 경계선을 부드럽게 잘라냄
             clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(color: const Color(0xFFFFFBF3)),
+            decoration: BoxDecoration(color: AppColors.canvas),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(53, 5, 53, 0),
               child: Column(
@@ -120,7 +118,7 @@ class _FreeStudyPageState extends State<FreeStudyPage> {
                       width: gridWidth,
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: const Color(0xFFCEEF91),
+                          color: AppColors.primary,
                           width: scaled(context, 5),
                         ),
                         color: Colors.white,
@@ -137,7 +135,7 @@ class _FreeStudyPageState extends State<FreeStudyPage> {
                         widget.nowPractice.practiceText,
                         style: TextStyle(
                           fontSize: scaled(context, 45),
-                          fontFamily: "MaruBuri",
+                          fontFamily: AppFonts.reading,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -175,7 +173,7 @@ class _FreeStudyPageState extends State<FreeStudyPage> {
                             essentialStrokeCounts:
                                 widget.nowPractice.essentialStrokeCounts,
                             charCount: widget.nowPractice.practiceText.length,
-                            gridColor: const Color(0xFFFFCEEF),
+                            gridColor: AppColors.tertiary,
                             gridWidth: scaled(context, 3),
                             cellSize: scaled(context, cellSize),
 
@@ -207,7 +205,7 @@ class _FreeStudyPageState extends State<FreeStudyPage> {
                           width: scaled(context, 230),
                           height: scaled(context, 80),
                           decoration: BoxDecoration(
-                            color: Color(0xFFCEEF91),
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(
                               scaled(context, 12),
                             ),
@@ -237,7 +235,7 @@ class _FreeStudyPageState extends State<FreeStudyPage> {
                           width: scaled(context, 230),
                           height: scaled(context, 80),
                           decoration: BoxDecoration(
-                            color: Color(0xFFCEEF91),
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(
                               scaled(context, 12),
                             ),
@@ -278,7 +276,7 @@ class _FreeStudyPageState extends State<FreeStudyPage> {
                           width: scaled(context, 230),
                           height: scaled(context, 80),
                           decoration: BoxDecoration(
-                            color: Color(0xFFCEEF91),
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(
                               scaled(context, 12),
                             ),

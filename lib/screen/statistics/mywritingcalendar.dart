@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:aiwriting_collection/design_system/app_layout.dart';
+import 'package:aiwriting_collection/design_system/app_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:aiwriting_collection/generated/app_localizations.dart';
 
@@ -162,11 +164,7 @@ class _MyWritingCalendarScreenState extends State<MyWritingCalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isLandscape = size.width > size.height;
-    final basePortrait = 390.0;
-    final baseLandscape = 844.0;
-    final scale =
-        isLandscape ? size.height / baseLandscape : size.width / basePortrait;
+    final scale = AppLayout.scale(size);
 
     final days = _daysInMonth(_focusedMonth);
     final lead = _leadingBlankCount(_focusedMonth);
@@ -177,7 +175,7 @@ class _MyWritingCalendarScreenState extends State<MyWritingCalendarScreen> {
     final appLocalizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF3),
+      backgroundColor: AppColors.canvas,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -248,10 +246,13 @@ class _MyWritingCalendarScreenState extends State<MyWritingCalendarScreen> {
                             icon: const Icon(Icons.chevron_left),
                           ),
                           Text(
-                            appLocalizations.yearMonth(_focusedMonth.year, _focusedMonth.month),
+                            appLocalizations.yearMonth(
+                              _focusedMonth.year,
+                              _focusedMonth.month,
+                            ),
                             style: TextStyle(
                               fontSize: 20 * scale,
-                              fontFamily: 'MaruBuri',
+                              fontFamily: AppFonts.reading,
                               fontWeight: FontWeight.w700,
                               color: Colors.black87,
                             ),
@@ -301,12 +302,14 @@ class _MyWritingCalendarScreenState extends State<MyWritingCalendarScreen> {
                       ),
                       _StatChip(
                         label: appLocalizations.averageScore,
-                        value: '${summary.avgScore.toStringAsFixed(0)}${appLocalizations.scoreUnit}',
+                        value:
+                            '${summary.avgScore.toStringAsFixed(0)}${appLocalizations.scoreUnit}',
                         scale: scale,
                       ),
                       _StatChip(
                         label: appLocalizations.sessionCount,
-                        value: '${summary.count}${appLocalizations.sessionUnit}',
+                        value:
+                            '${summary.count}${appLocalizations.sessionUnit}',
                         scale: scale,
                       ),
                     ],
@@ -330,7 +333,7 @@ class _MyWritingCalendarScreenState extends State<MyWritingCalendarScreen> {
                     appLocalizations.dayWed,
                     appLocalizations.dayThu,
                     appLocalizations.dayFri,
-                    appLocalizations.daySat
+                    appLocalizations.daySat,
                   ];
                   final isSunday = i == 0;
                   return Expanded(
@@ -536,7 +539,9 @@ class _MyWritingCalendarScreenState extends State<MyWritingCalendarScreen> {
                                 color: Colors.black45,
                               ),
                             ),
-                    title: Text(appLocalizations.practiceSummary(s.durationMin, s.score)),
+                    title: Text(
+                      appLocalizations.practiceSummary(s.durationMin, s.score),
+                    ),
                     subtitle: Text(appLocalizations.viewDetails),
                     onTap: () {}, // TODO: 상세 페이지로 이동
                   ),
