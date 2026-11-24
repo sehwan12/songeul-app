@@ -1,138 +1,67 @@
-<div align="center">
+# 손글손글 · Flutter 앱
 
-# 📘 손글손글 
-### ✍️ AI-Based Handwriting Learning Platform
+손글손글은 자음과 모음부터 문장까지 직접 써 보며 한글 손글씨를 연습하는 앱입니다. 글씨를 제출하면 글자 모양과 획순에 대한 피드백을 받고, 지난 연습 결과는 기록 화면에서 다시 볼 수 있습니다.
 
-**AI가 손글씨를 인식·분석·교정해주는 스마트 학습 플랫폼**  
-어린 학습자부터 성인까지 모두가 사용할 수 있는 맞춤형 글씨 교정 서비스
+이 저장소에는 Flutter 앱이 있습니다. 평가와 학습 기록 저장은 [FastAPI 서버 저장소](https://github.com/AI-WritingCorrection/writingCollection_model)에서 다룹니다.
 
----
+## 시연 및 다운로드
 
-### 📱 Demo Video  
-[🎬 시연 영상 1](https://youtu.be/hiKP2azsul4)  
-[🎬 시연 영상 2](https://youtu.be/4Eiu8ARfBwU)
+[시연 영상 1](https://youtu.be/hiKP2azsul4) · [시연 영상 2](https://youtu.be/4Eiu8ARfBwU)
 
-### 📦 APK 다운로드
+[![Android APK 다운로드](https://img.shields.io/badge/Download-APK-green?style=flat)](https://drive.google.com/uc?export=download&id=13mRweaetV0183VmhngQ40QmPLdWyfani)
 
-<p align="center">
-  <a href="https://drive.google.com/uc?export=download&id=13mRweaetV0183VmhngQ40QmPLdWyfani">
-    <img src="https://img.shields.io/badge/Download-APK-green?style=for-the-badge">
-  </a>
-</p>
+## 앱에서 할 수 있는 일
 
+- 글자, 단어, 문장 단계별로 연습하고, 자유 연습에서 원하는 유형의 글씨를 씁니다.
+- 제출한 글씨의 평가 결과와 고칠 부분을 확인합니다.
+- 완료한 미션과 점수 변화를 기록 화면에서 확인합니다. 필기 화면은 태블릿 가로 모드를 기준으로 구성했습니다.
 
+## 개발 환경에서 실행
 
+Flutter 3.29.2(Dart 3.7.2)와 Android 에뮬레이터 또는 기기가 필요합니다. iOS에서 실행하려면 macOS와 Xcode가 필요합니다.
 
-</div>
+1. 서버와 같은 Firebase 프로젝트의 앱 설정 파일을 준비합니다. Android는 `android/app/google-services.json`, iOS는 `ios/Runner/GoogleService-Info.plist`에 둡니다. 소셜 로그인을 사용하려면 해당 로그인 제공자도 설정해야 합니다.
+2. 저장소 루트에 `.env`를 만듭니다. 카카오 로그인을 사용할 경우 아래 두 키를 채웁니다.
 
+   ```dotenv
+   KAKAO_NATIVE_APP_KEY=
+   KAKAO_JAVASCRIPT_APP_KEY=
+   ```
 
-## 🌟 프로젝트 소개
+3. [서버 실행 안내](https://github.com/AI-WritingCorrection/writingCollection_model#로컬에서-실행)를 따라 API를 띄우고, [`lib/api.dart`](lib/api.dart)의 `_baseUrl`을 기기에서 접근할 수 있는 주소로 설정합니다. 호스트에서 서버를 실행 중이라면 Android 에뮬레이터에서는 `http://10.0.2.2:8000/api`를 사용합니다. 실제 기기에서는 접근 가능한 서버 주소를 사용합니다.
+4. 패키지를 설치하고 앱을 실행합니다.
 
-**손글손글**은 이미지 기반 글씨 분석뿐 아니라  
-**획순(Stroke)** · **형태 비율** · **음소 구조** · **가독성(OCR)** 등  
-다양한 요소를 종합적으로 평가하는 **4단계 심층 글씨 평가 모델**을 갖춘 손글씨 학습 플랫폼입니다.
+   ```sh
+   flutter pub get
+   flutter devices
+   flutter run
+   ```
 
-기존 따라쓰기 위주의 손글씨 앱과 달리,  
-**사용자의 실제 필기 데이터 분석 → 정교한 피드백 제공 → 성장 데이터 시각화**  
-까지 제공하는 차별화된 구조를 가지고 있습니다.
+로그아웃 상태에서 로그인 화면이 열리는지 확인하는 위젯 테스트는 `flutter test test/app_test.dart`로 실행할 수 있습니다.
 
+## 코드 구조
 
+| 경로 | 역할 |
+| --- | --- |
+| [`lib/screen/`](lib/screen/) | 홈, 단계 학습, 자유 연습, 기록, 프로필 화면 |
+| [`lib/widget/writing/`](lib/widget/writing/) | 필기 캔버스와 획 좌표, 글씨 이미지 처리 |
+| [`lib/model/provider/`](lib/model/provider/) | Provider 기반 로그인, 언어, 학습 데이터 상태 |
+| [`lib/design_system/`](lib/design_system/) | 앱 테마, 색상·글꼴·간격, 화면 크기 규칙 |
+| [`lib/api.dart`](lib/api.dart) | 서버 API 호출 |
 
-## 🎯 주요 기능
+공통 스타일은 `app_theme.dart`와 `app_tokens.dart`에 있습니다. 화면 크기에 맞춰 조절하는 요소는 `AppLayout.scale`을 사용합니다. 세로 너비 390, 가로 높이 844 논리 픽셀을 기준으로 하며, 큰 태블릿에서도 기본 크기의 1배까지만 확대됩니다.
 
-### ✔ AI 기반 4단계 평가 알고리즘
-1. **가독성 평가 (OCR)**
-2. **전체 비율 분석 (Bounding Box)**
-3. **획순 및 방향 평가 (Stroke Rules)**
-4. **음소 비율 디테일 분석**
+## 앱과 서버 구성
 
-→ 단순 교정이 아닌 **세밀한 피드백 중심**의 글씨 교정
+Flutter 앱은 필기 이미지와 획 좌표를 서버에 보내고, 돌아온 점수와 피드백을 표시합니다.
 
----
+![손글손글 앱과 서버 구성도](https://github.com/user-attachments/assets/0ffa0c25-86fb-4e9a-9e06-64f2d18b928a)
 
-### ✔ 단계별 학습 시스템
-- 자음/모음 → 글자 → 단어 → 문장  
-- 제한시간 모드 / 자유 연습 모드  
-- 난이도 기반 사용자 맞춤 학습  
+## 만든 사람들
 
----
-
-### ✔ UI/UX 특징
-- 종이 질감의 따뜻한 배경  
-- 캐릭터(곰/토끼)를 통한 학습 동기부여  
-- 태블릿 가로모드 최적화  
-- Bottom Navigation 구조  
-
----
-
-### ✔ 서버 및 데이터 관리
-- 사용자 학습 기록 저장 및 통계 분석  
-- 평가 점수/피드백/히스토리 관리  
-- 미션 기록 및 단계별 진행도 제공  
-
-
-## ⚙️ 기술 스택
-
-### **Frontend**
-- Flutter  
-- Provider  
-- CustomPainter 기반 필기 캔버스  
-
-### **Backend**
-- FastAPI  
-- Python  
-- EasyOCR 기반 AI 모델  
-- Stroke Rule-Based Evaluation  
-
-### **Infra**
-- AWS EC2  
-- Docker / Docker Compose  
-- NGINX Reverse Proxy  
-
-### **Database**
-- PostgreSQL  
-
-
-## 🏗 시스템 아키텍처
-
-<img width="865" height="603" alt="image" src="https://github.com/user-attachments/assets/0ffa0c25-86fb-4e9a-9e06-64f2d18b928a" />
-
-## 🔍 핵심 알고리즘 요약
-
-AI-WritingCorrection의 평가 모델은 **가독성 → 형태 → 획순 → 음소 디테일**의  
-4단계 정밀 분석 구조로 이루어져 있습니다.
-
-<div align="center">
-
-
-
-
-</div>
-
-
-
-| 단계 | 평가 내용 | 사용 기술 | 결과 |
-|------|------------|------------------------|---------------------------|
-| **1단계** | 가독성 평가 | EasyOCR, 자모 분석 | 글자 인식 여부 판단 |
-| **2단계** | 전체 구조 분석 | Bounding Box 비율 | 글씨 크기/비율 피드백 |
-| **3단계** | 획순 평가 | Stroke 벡터 + Rule-base | 올바른 쓰기 과정 검증 |
-| **4단계** | 음소 디테일 분석 | 음소별 비율·형태 분석 | 정교한 오류 탐지 |
-
-
-
-## 👥 Team
-
-<div align="center">
-
-| 팀원 | 이름 | 역할 |
-|------|------|-------|
-| 🧭 **Team Leader** | **정영진** | Front-end 개발 |
-| 👥 **Team Member** | 박세환 | Front-end 개발 / Back-end 개발 |
-| 👥 **Team Member** | 류효상 | 모델 개발 / 데이터 수집 및 정리 |
-| 👥 **Team Member** | 신주원 | 모델 개발 / 데이터 수집 및 정리 |
-
-</div>
-
-
-
-
+| 이름 | 역할 |
+| --- | --- |
+| 정영진 | 팀장, 프런트엔드 |
+| 박세환 | 프런트엔드·백엔드 |
+| 류효상 | 모델 개발·데이터 수집 및 정리 |
+| 신주원 | 모델 개발·데이터 수집 및 정리 |
