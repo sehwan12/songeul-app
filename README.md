@@ -1,34 +1,66 @@
 # 손글손글 · Flutter 앱
 
-손글손글은 자음과 모음부터 문장까지 직접 써 보며 한글 손글씨를 연습하는 앱입니다. 글씨를 제출하면 글자 모양과 획순에 대한 피드백을 받고, 지난 연습 결과는 기록 화면에서 다시 볼 수 있습니다.
+자음과 모음부터 문장까지 직접 써 보고, AI 피드백으로 글씨를 교정하는 한글 손글씨 연습 앱입니다.
 
-이 저장소에는 Flutter 앱이 있습니다. 평가와 학습 기록 저장은 [FastAPI 서버 저장소](https://github.com/AI-WritingCorrection/writingCollection_model)에서 다룹니다.
+*An app for practicing Korean handwriting with AI feedback.*
 
-## 시연 및 다운로드
+![개발 환경 Flutter 3.29.2](https://img.shields.io/badge/Flutter-3.29.2-02569B?logo=flutter)
+![앱 플랫폼 Android 및 iOS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS-49647D)
 
-[시연 영상 1](https://youtu.be/hiKP2azsul4) · [시연 영상 2](https://youtu.be/4Eiu8ARfBwU)
+<table>
+  <tr>
+    <th width="50%">홈</th>
+    <th width="50%">단계 연습</th>
+  </tr>
+  <tr>
+    <td><a href="docs/screenshots/home.png"><img src="docs/screenshots/home.png" alt="홈의 단계별 학습 경로와 미션 버튼"></a></td>
+    <td><a href="docs/screenshots/practice.png"><img src="docs/screenshots/practice.png" alt="포도를 따라 쓰는 단계 연습의 필기 칸과 제출 버튼"></a></td>
+  </tr>
+  <tr>
+    <th>평가 결과</th>
+    <th>학습 기록</th>
+  </tr>
+  <tr>
+    <td><a href="docs/screenshots/feedback.png"><img src="docs/screenshots/feedback.png" alt="총점과 항목별 교정 대상 글자가 표시된 평가 결과"></a></td>
+    <td><a href="docs/screenshots/history.png"><img src="docs/screenshots/history.png" alt="날짜별 평균 점수 변화를 보여 주는 학습 기록 그래프"></a></td>
+  </tr>
+</table>
 
-[![Android APK 다운로드](https://img.shields.io/badge/Download-APK-green?style=flat)](https://drive.google.com/uc?export=download&id=13mRweaetV0183VmhngQ40QmPLdWyfani)
+화면의 점수와 기록에는 예시 데이터를 사용했습니다.
 
 ## 앱에서 할 수 있는 일
 
-- 글자, 단어, 문장 단계별로 연습하고, 자유 연습에서 원하는 유형의 글씨를 씁니다.
-- 제출한 글씨의 평가 결과와 고칠 부분을 확인합니다.
-- 완료한 미션과 점수 변화를 기록 화면에서 확인합니다. 필기 화면은 태블릿 가로 모드를 기준으로 구성했습니다.
+- 글자·단어·문장으로 이어지는 단계별 미션을 풀거나, 자유 연습 목록에서 연습할 글자·단어·문장을 골라 씁니다.
+- 글씨를 제출하면 가독성, 글자 전체 비율, 획순과 방향, 자모 비율에 대한 점수와 피드백을 받습니다.
+- 학습 기록에서 일자별 연습 횟수, 점수 변화, 미션 완료율을 확인합니다.
+
+## 시연 및 다운로드
+
+[![손글손글 시연 영상 1 썸네일](docs/demo-thumbnail.jpg)](https://youtu.be/hiKP2azsul4)
+
+[시연 영상 2](https://youtu.be/4Eiu8ARfBwU) · [Android APK 다운로드](https://drive.google.com/uc?export=download&id=13mRweaetV0183VmhngQ40QmPLdWyfani)
+
+## 앱과 서버 구성
+
+Flutter 앱이 필기 이미지와 획 좌표를 [FastAPI 서버](https://github.com/AI-WritingCorrection/server)에 보내면, 서버는 글씨를 평가하고 점수와 피드백을 반환합니다. 서버는 로그인과 학습 기록 저장·조회도 처리합니다.
+
+![손글손글 앱과 서버 구성도](docs/architecture.png)
+
+## 지원 환경
+
+- 개발 기준은 Flutter 3.29.2(Dart 3.7.2)입니다. Android 에뮬레이터 또는 기기를 사용할 수 있고, iOS에서 실행하려면 macOS와 Xcode가 필요합니다.
+- 필기 연습은 태블릿 가로 화면을 기준으로 합니다. 화면 캡처와 같은 환경에서 확인하려면 가로 모드 태블릿 에뮬레이터를 사용하세요.
 
 ## 개발 환경에서 실행
 
-Flutter 3.29.2(Dart 3.7.2)와 Android 에뮬레이터 또는 기기가 필요합니다. iOS에서 실행하려면 macOS와 Xcode가 필요합니다.
+1. 팀원은 팀 Firebase 프로젝트의 앱 설정 파일을 사용합니다. 그 외에는 본인의 Firebase 프로젝트에 앱을 등록해 설정 파일을 받습니다. Android는 `android/app/google-services.json`, iOS는 `ios/Runner/GoogleService-Info.plist`에 둡니다. 사용할 로그인 제공자를 설정하고, 서버에도 같은 Firebase 프로젝트의 서비스 계정 파일을 준비합니다.
+2. 저장소 루트에서 환경 파일을 만듭니다. 카카오 로그인을 사용할 때는 `KAKAO_NATIVE_APP_KEY`와 `KAKAO_JAVASCRIPT_APP_KEY`를 채우고, 앱의 네이티브 OAuth 콜백 스킴을 등록한 앱에 맞춥니다.
 
-1. 서버와 같은 Firebase 프로젝트의 앱 설정 파일을 준비합니다. Android는 `android/app/google-services.json`, iOS는 `ios/Runner/GoogleService-Info.plist`에 둡니다. 소셜 로그인을 사용하려면 해당 로그인 제공자도 설정해야 합니다.
-2. 저장소 루트에 `.env`를 만듭니다. 카카오 로그인을 사용할 경우 아래 두 키를 채웁니다.
-
-   ```dotenv
-   KAKAO_NATIVE_APP_KEY=
-   KAKAO_JAVASCRIPT_APP_KEY=
+   ```sh
+   cp .env.example .env
    ```
 
-3. [서버 실행 안내](https://github.com/AI-WritingCorrection/writingCollection_model#로컬에서-실행)를 따라 API를 띄우고, [`lib/api.dart`](lib/api.dart)의 `_baseUrl`을 기기에서 접근할 수 있는 주소로 설정합니다. 호스트에서 서버를 실행 중이라면 Android 에뮬레이터에서는 `http://10.0.2.2:8000/api`를 사용합니다. 실제 기기에서는 접근 가능한 서버 주소를 사용합니다.
+3. [FastAPI 서버의 로컬 실행 가이드](https://github.com/sehwan12/songeul-server#로컬에서-실행)를 따라 서버를 띄웁니다. [`lib/api.dart`](lib/api.dart)의 `_baseUrl`은 Android 에뮬레이터에서 `http://10.0.2.2:8000/api`, iOS 시뮬레이터에서 `http://127.0.0.1:8000/api`로 설정합니다. 실제 기기에서는 같은 네트워크에서 접근할 수 있는 서버 IP나 배포 주소에 `/api`를 붙여 사용합니다.
 4. 패키지를 설치하고 앱을 실행합니다.
 
    ```sh
@@ -37,7 +69,7 @@ Flutter 3.29.2(Dart 3.7.2)와 Android 에뮬레이터 또는 기기가 필요합
    flutter run
    ```
 
-로그아웃 상태에서 로그인 화면이 열리는지 확인하는 위젯 테스트는 `flutter test test/app_test.dart`로 실행할 수 있습니다.
+로그아웃 상태의 로그인 화면만 확인하려면 `.env`를 만든 뒤 `flutter test test/app_test.dart`를 실행합니다. 이 위젯 테스트에는 Firebase 설정 파일이나 실행 중인 API 서버가 필요하지 않습니다.
 
 ## 코드 구조
 
@@ -49,19 +81,13 @@ Flutter 3.29.2(Dart 3.7.2)와 Android 에뮬레이터 또는 기기가 필요합
 | [`lib/design_system/`](lib/design_system/) | 앱 테마, 색상·글꼴·간격, 화면 크기 규칙 |
 | [`lib/api.dart`](lib/api.dart) | 서버 API 호출 |
 
-공통 스타일은 `app_theme.dart`와 `app_tokens.dart`에 있습니다. 화면 크기에 맞춰 조절하는 요소는 `AppLayout.scale`을 사용합니다. 세로 너비 390, 가로 높이 844 논리 픽셀을 기준으로 하며, 큰 태블릿에서도 기본 크기의 1배까지만 확대됩니다.
-
-## 앱과 서버 구성
-
-Flutter 앱은 필기 이미지와 획 좌표를 서버에 보내고, 돌아온 점수와 피드백을 표시합니다.
-
-![손글손글 앱과 서버 구성도](https://github.com/user-attachments/assets/0ffa0c25-86fb-4e9a-9e06-64f2d18b928a)
+공통 스타일은 `app_theme.dart`와 `app_tokens.dart`에 있습니다. 화면 크기에 맞춰 조절하는 요소는 `AppLayout.scale`을 사용합니다. 세로 모드는 화면 너비 390, 가로 모드는 화면 높이 844 논리 픽셀을 기준으로 하며, 배율은 최대 1.0입니다.
 
 ## 만든 사람들
 
 | 이름 | 역할 |
 | --- | --- |
 | 정영진 | 팀장, 프런트엔드 |
-| 박세환 | 프런트엔드·백엔드 |
-| 류효상 | 모델 개발·데이터 수집 및 정리 |
+| [박세환](https://github.com/sehwan12) | 기획, Flutter 앱 개발(필기 캔버스·API 연동), 서버 개발(학습 통계 API) |
+| [류효상](https://github.com/hje1072) | 모델 개발·데이터 수집 및 정리 |
 | 신주원 | 모델 개발·데이터 수집 및 정리 |
