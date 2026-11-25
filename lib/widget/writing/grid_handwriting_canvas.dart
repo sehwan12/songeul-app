@@ -273,72 +273,77 @@ class GridHandwritingCanvasState extends State<GridHandwritingCanvas> {
     });
   }
 
-  Map<int, List<Offset>> getFirstAndLastStrokes() {
-    final firstAndLast = <int, List<Offset>>{};
+  Future<HandwritingSubmission> captureSubmission() async {
+    if (_activePointer != null) {
+      setState(_resetPointer);
+    }
+    final colCount = cols;
+    final cellSize = widget.cellSize;
+    final penColor = widget.penColor;
+    final pixelSize = cellSize.ceil();
+    final cellGroups = <int, List<Stroke>>{};
+    final endpoints = <int, List<Offset>>{};
     for (final stroke in strokes) {
-      firstAndLast.putIfAbsent(stroke.cellIndex, () => [])
+      cellGroups.putIfAbsent(stroke.cellIndex, () => []).add(stroke);
+      endpoints.putIfAbsent(stroke.cellIndex, () => [])
         ..add(stroke.path.first)
         ..add(stroke.path.last);
     }
-    return firstAndLast;
-  }
 
-  Future<Map<int, List<Uint8List>>> exportCellStrokeImages() async {
-    final colCount = cols;
-    final cellGroups = <int, List<Stroke>>{};
-    for (final stroke in strokes) {
-      cellGroups.putIfAbsent(stroke.cellIndex, () => []).add(stroke);
-    }
-
-    // 그룹별로 획을 PNG 이미지로 변환
-    final Map<int, List<Uint8List>> result = {};
-    for (var entry in cellGroups.entries) {
+    final imagesByCell = <int, List<Uint8List>>{};
+    for (final entry in cellGroups.entries) {
       final cellIndex = entry.key;
-      final strokesInCell = entry.value;
-      final List<Uint8List> images = [];
-
-      // Export each stroke to an offscreen image sized to one cell
-      for (var stroke in strokesInCell) {
+      final origin = Offset(
+        (cellIndex % colCount) * cellSize,
+        (cellIndex ~/ colCount) * cellSize,
+      );
+      final images = <Uint8List>[];
+      for (final stroke in entry.value) {
         final recorder = ui.PictureRecorder();
-        final canvas = Canvas(
-          recorder,
-          Rect.fromLTWH(0, 0, widget.cellSize, widget.cellSize),
-        );
+        final canvas = Canvas(recorder);
         final paint =
             Paint()
-              ..color = widget.penColor
-              ..strokeWidth =
-                  stroke
-                      .strokeWidth // Use the stroke's saved width
+              ..color = penColor
+              ..strokeWidth = stroke.strokeWidth
               ..strokeCap = StrokeCap.round;
+        canvas.clipRect(Rect.fromLTWH(0, 0, cellSize, cellSize));
+        canvas.translate(-origin.dx, -origin.dy);
 
-        // Draw translated stroke so that the cell's origin is (0,0)
-        // Compute cell origin in canvas coords
-        final cellRow = cellIndex ~/ colCount;
-        final cellCol = cellIndex % colCount;
-        final dx = -cellCol * widget.cellSize;
-        final dy = -cellRow * widget.cellSize;
-        canvas.translate(dx, dy);
-
-        for (int i = 0; i < stroke.path.length - 1; i++) {
+        for (var i = 0; i < stroke.path.length - 1; i++) {
           canvas.drawLine(stroke.path[i], stroke.path[i + 1], paint);
         }
 
         final picture = recorder.endRecording();
-        final uiImage = await picture.toImage(
-          widget.cellSize.toInt(),
-          widget.cellSize.toInt(),
-        );
-        final byteData = await uiImage.toByteData(
-          format: ui.ImageByteFormat.png,
-        );
-        if (byteData != null) {
-          images.add(byteData.buffer.asUint8List());
+        try {
+          final image = await picture.toImage(pixelSize, pixelSize);
+          try {
+            final bytes = await image.toByteData(
+              format: ui.ImageByteFormat.png,
+            );
+            if (bytes == null)
+              throw StateError('Unable to encode stroke image');
+            images.add(
+              bytes.buffer.asUint8List(
+                bytes.offsetInBytes,
+                bytes.lengthInBytes,
+              ),
+            );
+          } finally {
+            image.dispose();
+          }
+        } finally {
+          picture.dispose();
         }
       }
-      result[cellIndex] = images;
+      imagesByCell[cellIndex] = images;
     }
-
-    return result;
+    return HandwritingSubmission(imagesByCell, endpoints);
   }
+}
+
+class HandwritingSubmission {
+  const HandwritingSubmission(this.imagesByCell, this.endpointsByCell);
+
+  final Map<int, List<Uint8List>> imagesByCell;
+  final Map<int, List<Offset>> endpointsByCell;
 }

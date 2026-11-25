@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:aiwriting_collection/design_system/app_layout.dart';
 import 'package:aiwriting_collection/design_system/app_tokens.dart';
@@ -16,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:aiwriting_collection/api.dart';
 import 'package:provider/provider.dart';
 import '../../model/provider/login_status.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:aiwriting_collection/widget/dialog/feedback_dialog.dart';
 import 'package:aiwriting_collection/widget/dialog/letter_feedback.dart';
 
@@ -35,7 +33,7 @@ class WritingPage extends StatefulWidget {
 
 class _WritingPageState extends State<WritingPage> {
   bool _isPoppingPage = false;
-  bool _isLoadingDialogShown = false;
+  bool _isSubmitting = false;
   double _penStrokeWidth = 7.0; // Initial pen thickness
   static const double _minPenStrokeWidth = 1.0;
   static const double _maxPenStrokeWidth = 20.0;
@@ -159,11 +157,6 @@ class _WritingPageState extends State<WritingPage> {
     _timer = null;
   }
 
-  /// 캔버스에서 각 셀의 획 이미지를 추출합니다
-  Future<Map<int, List<Uint8List>>?> _exportCanvasImages() async {
-    return await _canvasKey.currentState?.exportCellStrokeImages();
-  }
-
   /// 각 셀의 획 이미지를 base64로 인코딩합니다
   Map<int, List<String>> _encodeImages(Map<int, List<Uint8List>> images) {
     final Map<int, List<String>> cellImages = {};
@@ -231,20 +224,16 @@ class _WritingPageState extends State<WritingPage> {
   }
 
   Future<void> _submitWritingData(
-    Map<int, List<Uint8List>> rawImages,
     Map<int, List<String>> encodedImages,
+    Map<int, List<Offset>> endpoints,
   ) async {
-    // Get first/last stroke points
-    Map<int, List<Offset>>? firstAndLastStroke =
-        _canvasKey.currentState?.getFirstAndLastStrokes();
-
     // Create result model
     final resultCreate = {
       'user_id': context.read<LoginStatus>().userId,
       'step_id': widget.nowStep.stepId,
       'practice_text': widget.nowStep.stepText,
       'cell_images': _stringKeyMap3(encodedImages),
-      'firstandlast_stroke': (firstAndLastStroke ?? {}).map(
+      'firstandlast_stroke': endpoints.map(
         (key, list) => MapEntry(
           key.toString(),
           list.map((off) => {'x': off.dx, 'y': off.dy}).toList(),
@@ -255,37 +244,11 @@ class _WritingPageState extends State<WritingPage> {
       ),
       'user_type': context.read<LoginStatus>().userType?.name,
     };
-    print(resultCreate['user_type']);
-
-    // Save images locally (debug)
-    final dir = await getApplicationDocumentsDirectory();
-    final now = DateTime.now();
-    final timestamp =
-        '${now.month.toString().padLeft(2, '0')}'
-        '${now.day.toString().padLeft(2, '0')}'
-        '${now.hour.toString().padLeft(2, '0')}'
-        '${now.minute.toString().padLeft(2, '0')}'
-        '${now.second.toString().padLeft(2, '0')}';
-    final saveDir = Directory('${dir.path}/$timestamp');
-    if (!await saveDir.exists()) {
-      await saveDir.create(recursive: true);
-    }
-    for (var entry in rawImages.entries) {
-      final cellIndex = entry.key;
-      for (int i = 0; i < entry.value.length; i++) {
-        final bytes = entry.value[i];
-        final file = File('${saveDir.path}/cell_${cellIndex}_$i.png');
-        await file.writeAsBytes(bytes);
-      }
-    }
-    print('Saved raw stroke images to: ${saveDir.path}');
-
-    // Submit result to server
     final res = await api.submitResult(resultCreate);
+    if (!mounted) return;
 
     if (res.statusCode == 200) {
       final decoded = utf8.decode(res.bodyBytes);
-      print('평가결과 : $decoded');
       final Map<String, dynamic> data = jsonDecode(decoded);
       final List<Map<String, dynamic>> resultsList =
           ((data['results'] as List?) ?? const [])
@@ -308,7 +271,7 @@ class _WritingPageState extends State<WritingPage> {
       final double? avgScore = (data['avg_score'] as num?)?.toDouble();
 
       // If avgScore is over 60, refresh mission records
-      if (avgScore != null && avgScore > 60) {
+      if (avgScore != null && avgScore >= 60) {
         if (mounted) {
           Provider.of<DataProvider>(
             context,
@@ -334,9 +297,6 @@ class _WritingPageState extends State<WritingPage> {
       }
 
       if (!mounted) return;
-      if (_isLoadingDialogShown) {
-        Navigator.of(context).pop(); // Close the loading dialog
-      }
       await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -366,66 +326,42 @@ class _WritingPageState extends State<WritingPage> {
     }
   }
 
-  //제출버튼을 누른 후 과정을 처리하는 함수
   Future<void> _handleSubmit() async {
+    if (_isSubmitting || _isPoppingPage || _feedbackReady) return;
     final appLocalizations = AppLocalizations.of(context)!;
-    if (_isLoadingDialogShown || _isPoppingPage) return;
+    final canvas = _canvasKey.currentState;
+    if (canvas == null) return;
+
+    setState(() => _isSubmitting = true);
     _stopTimer();
-    setState(() {
-      _feedbackReady = false;
-    });
 
-    final rawImages = await _exportCanvasImages();
-    if (rawImages == null || rawImages.isEmpty) {
-      _startTimer();
-      return;
-    }
-
-    final encodedImages = _encodeImages(rawImages);
-
-    final isStrokesValid = await _validateStrokes(encodedImages);
-    if (!isStrokesValid) {
-      _startTimer();
-      return;
-    }
-
-    _isLoadingDialogShown = true;
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    ).then((_) {
-      _isLoadingDialogShown = false;
-    });
-
-    // Removed the showDialog for CircularProgressIndicator as it was causing an issue in the previous turn.
-    // If needed, it can be added back with proper error handling.
     try {
-      await _submitWritingData(rawImages, encodedImages);
-    } catch (e) {
+      final submission = await canvas.captureSubmission();
+      if (!mounted || submission.imagesByCell.isEmpty) return;
+      final encodedImages = _encodeImages(submission.imagesByCell);
+      if (!await _validateStrokes(encodedImages) || !mounted) return;
+
+      await _submitWritingData(encodedImages, submission.endpointsByCell);
+    } catch (error) {
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text(appLocalizations.error),
+              content: Text('평가 전송 중 오류가 발생했습니다: $error'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(appLocalizations.ok),
+                ),
+              ],
+            ),
+      );
+    } finally {
       if (mounted) {
-        if (_isLoadingDialogShown) {
-          Navigator.of(context).pop(); // Close the loading dialog
-        }
-        if (!mounted) return;
-        showDialog(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: Text(appLocalizations.error),
-                content: Text('평가 전송 중 오류가 발생했습니다: $e'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      if (mounted) Navigator.of(context).pop();
-                    },
-                    child: Text(appLocalizations.ok),
-                  ),
-                ],
-              ),
-        );
+        setState(() => _isSubmitting = false);
+        if (!_feedbackReady) _startTimer();
       }
     }
   }
@@ -576,7 +512,7 @@ class _WritingPageState extends State<WritingPage> {
                         children: [
                           // 1) 캔버스는 피드백 준비되면 포인터 차단!
                           AbsorbPointer(
-                            absorbing: _feedbackReady, // true면 아래 위젯이 터치 못 받음
+                            absorbing: _isSubmitting || _feedbackReady,
                             child: GestureDetector(
                               behavior: HitTestBehavior.opaque,
                               onPanDown: (_) {}, // 스크롤 방지 유지
@@ -688,7 +624,10 @@ class _WritingPageState extends State<WritingPage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            if (_isLoadingDialogShown || _isPoppingPage) return;
+                            if (_isSubmitting ||
+                                _isPoppingPage ||
+                                _feedbackReady)
+                              return;
                             _canvasKey.currentState?.undoLastStroke();
                           },
                           child: Container(
@@ -721,7 +660,7 @@ class _WritingPageState extends State<WritingPage> {
                         SizedBox(width: scaled(context, 35)),
                         GestureDetector(
                           onTap: () {
-                            if (_isLoadingDialogShown || _isPoppingPage) return;
+                            if (_isSubmitting || _isPoppingPage) return;
                             _stopTimer(); // 타이머 멈춤
                             _canvasKey.currentState?.clearAll(); // 글씨 지우기
                             setState(() {
@@ -761,7 +700,10 @@ class _WritingPageState extends State<WritingPage> {
                         ),
                         SizedBox(width: scaled(context, 35)),
                         GestureDetector(
-                          onTap: _handleSubmit,
+                          onTap:
+                              _isSubmitting || _feedbackReady
+                                  ? null
+                                  : _handleSubmit,
                           child: Container(
                             width: scaled(context, 230),
                             height: scaled(context, 80),
@@ -779,13 +721,16 @@ class _WritingPageState extends State<WritingPage> {
                               ],
                             ),
                             alignment: Alignment.center,
-                            child: Text(
-                              appLocalizations.submit,
-                              style: TextStyle(
-                                fontSize: scaled(context, 30),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child:
+                                _isSubmitting
+                                    ? const CircularProgressIndicator()
+                                    : Text(
+                                      appLocalizations.submit,
+                                      style: TextStyle(
+                                        fontSize: scaled(context, 30),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                           ),
                         ),
                         SizedBox(width: scaled(context, 35)),
