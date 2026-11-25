@@ -320,8 +320,9 @@ class GridHandwritingCanvasState extends State<GridHandwritingCanvas> {
             final bytes = await image.toByteData(
               format: ui.ImageByteFormat.png,
             );
-            if (bytes == null)
+            if (bytes == null) {
               throw StateError('Unable to encode stroke image');
+            }
             images.add(
               bytes.buffer.asUint8List(
                 bytes.offsetInBytes,

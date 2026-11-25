@@ -183,41 +183,48 @@ class _WritingPageState extends State<WritingPage> {
     );
   }
 
-  /// 획 수를 검증합니다
   Future<bool> _validateStrokes(Map<int, List<String>> cellImages) async {
-    final int lastIndex = widget.nowStep.stepText.length - 1;
-    final requiredStrokes =
-        widget.nowStep.essentialStrokeCounts?[lastIndex] ?? 0;
-    final actualStrokes = cellImages[lastIndex]?.length ?? 0;
-
-    if (actualStrokes > requiredStrokes) {
-      await _showStrokeErrorDialog(
-        AppLocalizations.of(context)!.tooManyStrokes,
-      );
-      return false;
-    } else if (actualStrokes < requiredStrokes) {
-      await _showStrokeErrorDialog(
-        AppLocalizations.of(context)!.notEnoughStrokes,
-      );
-      return false;
+    final required = widget.nowStep.essentialStrokeCounts!;
+    final localizations = AppLocalizations.of(context)!;
+    for (var cell = 0; cell < required.length; cell++) {
+      final actual = cellImages[cell]?.length ?? 0;
+      if (actual != required[cell]) {
+        await _showStrokeErrorDialog(
+          actual > required[cell]
+              ? localizations.tooManyStrokes
+              : localizations.notEnoughStrokes,
+        );
+        return false;
+      }
     }
     return true;
   }
 
-  /// 화면상의 글자 인덱스를 결과 인덱스로 매핑(공백은 제외)
-  List<int?> _buildTextIndexToResultMap(
-    String text,
-    List<Map<String, dynamic>> results,
-  ) {
-    final chars = text.characters.toList();
-    final mapping = <int?>[];
-    int resultIdx = 0;
-    for (final ch in chars) {
-      if (ch.trim().isEmpty) {
-        mapping.add(null);
-      } else {
-        mapping.add(resultIdx < results.length ? resultIdx : null);
-        resultIdx++;
+  List<int?> _buildTextIndexToResultMap(List<Map<String, dynamic>> results) {
+    final required = widget.nowStep.essentialStrokeCounts!;
+    final mapping = List<int?>.filled(required.length, null);
+    final writableCells = [
+      for (var cell = 0; cell < required.length; cell++)
+        if (required[cell] > 0) cell,
+    ];
+
+    // Older servers return results in writing order without cell indexes.
+    if (results.every((result) => !result.containsKey('cell_index'))) {
+      if (results.length == writableCells.length) {
+        for (var i = 0; i < results.length; i++) {
+          mapping[writableCells[i]] = i;
+        }
+      }
+      return mapping;
+    }
+
+    for (var i = 0; i < results.length; i++) {
+      final cell = results[i]['cell_index'];
+      if (cell is int &&
+          cell >= 0 &&
+          cell < required.length &&
+          required[cell] > 0) {
+        mapping[cell] = i;
       }
     }
     return mapping;
@@ -260,10 +267,7 @@ class _WritingPageState extends State<WritingPage> {
       // 제출 성공 후 결과 저장 + 열람 가능 플래그 켜기
       setState(() {
         _letterResults = resultsList;
-        _textIndexToResult = _buildTextIndexToResultMap(
-          widget.nowStep.stepText,
-          resultsList,
-        );
+        _textIndexToResult = _buildTextIndexToResultMap(resultsList);
         _feedbackReady = true;
       });
 
@@ -280,20 +284,16 @@ class _WritingPageState extends State<WritingPage> {
         }
       }
 
-      // 2) 글자별 stage 목록 만들기 (공백은 0000, 결과는 글자 순서대로 매핑)
-      final List<String> stages = [];
-      int resultIdx = 0;
-      for (final ch in widget.nowStep.stepText.characters) {
-        if (ch.trim().isEmpty) {
-          stages.add('0000');
-          continue;
-        }
-        final String stage =
-            (resultIdx < resultsList.length)
-                ? (resultsList[resultIdx]['stage'] as String?) ?? '0000'
-                : '0000';
-        stages.add(stage);
-        resultIdx++;
+      final stages = <String>[];
+      var cell = 0;
+      for (final character in widget.nowStep.stepText.characters) {
+        final resultIndex = _textIndexToResult[cell];
+        stages.add(
+          resultIndex == null
+              ? '0000'
+              : (resultsList[resultIndex]['stage'] as String?) ?? '0000',
+        );
+        cell += character.length;
       }
 
       if (!mounted) return;
@@ -337,9 +337,10 @@ class _WritingPageState extends State<WritingPage> {
 
     try {
       final submission = await canvas.captureSubmission();
-      if (!mounted || submission.imagesByCell.isEmpty) return;
+      if (!mounted) return;
       final encodedImages = _encodeImages(submission.imagesByCell);
       if (!await _validateStrokes(encodedImages) || !mounted) return;
+      if (encodedImages.isEmpty) return;
 
       await _submitWritingData(encodedImages, submission.endpointsByCell);
     } catch (error) {
@@ -557,7 +558,7 @@ class _WritingPageState extends State<WritingPage> {
                                     rowCount - 1,
                                   );
 
-                                  int index = row * 10 + col;
+                                  final index = row * colCount + col;
                                   if (index >= totalChars) return; // 빈 칸은 무시
                                   if (_textIndexToResult.isEmpty ||
                                       index >= _textIndexToResult.length) {
@@ -626,8 +627,9 @@ class _WritingPageState extends State<WritingPage> {
                           onTap: () {
                             if (_isSubmitting ||
                                 _isPoppingPage ||
-                                _feedbackReady)
+                                _feedbackReady) {
                               return;
+                            }
                             _canvasKey.currentState?.undoLastStroke();
                           },
                           child: Container(
@@ -722,7 +724,7 @@ class _WritingPageState extends State<WritingPage> {
                             ),
                             alignment: Alignment.center,
                             child:
-                                _isSubmitting
+                                _isSubmitting && !_feedbackReady
                                     ? const CircularProgressIndicator()
                                     : Text(
                                       appLocalizations.submit,

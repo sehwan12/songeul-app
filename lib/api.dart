@@ -145,7 +145,7 @@ class Api {
 
   /// 글씨데이터를 서버에 전송하여 평가 결과를 받음
   Future<http.Response> submitResult(Map<String, dynamic> payload) {
-    return http.post(
+    return _client.post(
       Uri.parse('$_baseUrl/step/evaluate'),
       headers: _headers,
       body: jsonEncode(payload),
